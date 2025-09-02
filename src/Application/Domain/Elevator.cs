@@ -51,6 +51,31 @@ public class Elevator
             return;
         }
 
+        if (State == ElevatorStateEnum.Idle &&
+            call.Direction == DirectionEnum.Down &&
+            call.Floor > CurrentFloor)
+        {
+            // First, add an UP stop to reach the requested floor
+            AddStop(call.Floor, DirectionEnum.Up);
+            // Then, add a DOWN stop to serve the DOWN request at that floor
+            AddStop(call.Floor, DirectionEnum.Down);
+            // Set direction to UP to start moving
+            Direction = DirectionEnum.Up;
+            State = ElevatorStateEnum.Moving;
+            return;
+        }
+
+        if (State == ElevatorStateEnum.Idle &&
+            call.Direction == DirectionEnum.Up &&
+            call.Floor < CurrentFloor)
+        {
+            AddStop(call.Floor, DirectionEnum.Down);
+            AddStop(call.Floor, DirectionEnum.Up);
+            Direction = DirectionEnum.Down;
+            State = ElevatorStateEnum.Moving;
+            return;
+        }
+
         AddStop(call.Floor, call.Direction);
     }
 
@@ -69,19 +94,12 @@ public class Elevator
             case ElevatorStateEnum.Idle:
                 if (UpStops.Any())
                 {
-                    if (CurrentFloor < UpStops.FirstOrDefault())
-                        Direction = DirectionEnum.Up;
-                    else if (CurrentFloor > UpStops.FirstOrDefault())
-                        Direction = DirectionEnum.Down;
-
+                    Direction = DirectionEnum.Up;
                     State = ElevatorStateEnum.Moving;
                 }
                 else if (DownStops.Any())
                 {
-                    if (CurrentFloor < DownStops.FirstOrDefault())
-                        Direction = DirectionEnum.Up;
-                    else if (CurrentFloor > DownStops.FirstOrDefault())
-                        Direction = DirectionEnum.Down;
+                    Direction = DirectionEnum.Down;
                     State = ElevatorStateEnum.Moving;
                 }
                 break;
@@ -138,10 +156,8 @@ public class Elevator
 
     private void RemoveStopHere()
     {
-        if (Direction == DirectionEnum.Up)
-            UpStops.Remove(CurrentFloor);
-        else if (Direction == DirectionEnum.Down)
-            DownStops.Remove(CurrentFloor);
+        UpStops.Remove(CurrentFloor);
+        DownStops.Remove(CurrentFloor);
     }
 
     private bool HasStopsInCurrentDirection()

@@ -36,12 +36,12 @@ public class Simulation
             // Assign hall calls to elevators and log assignments.
             _elevatorService.AcceptHallCalls(calls, now);
 
-            // Advance all elevators by one tick.
-            _elevatorService.Tick(now, _clock.TickSize);
-
             // Log the status of all elevators for this tick.
             _elevatorService.PrintElevatorStatus(now);
             AnsiConsole.Write(new Rule());
+
+            // Advance all elevators by one tick.
+            _elevatorService.Tick(now, _clock.TickSize);
 
             // Advance the simulation clock to the next tick.
             _clock.Advance();

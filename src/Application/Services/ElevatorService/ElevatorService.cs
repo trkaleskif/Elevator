@@ -66,7 +66,10 @@ public class ElevatorService : IElevatorService
             elevator.Tick(now, tickSize);
             // Remove served calls from outstanding set when elevator is dwelling at a stop.
             if (elevator.State == ElevatorStateEnum.Dwelling && elevator.ShouldStopHere())
-                _outstandingCalls.Remove((elevator.CurrentFloor, elevator.Direction));
+            {
+                _outstandingCalls.Remove((elevator.CurrentFloor, DirectionEnum.Up));
+                _outstandingCalls.Remove((elevator.CurrentFloor, DirectionEnum.Down));
+            }
         }
     }
 
